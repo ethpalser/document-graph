@@ -1,18 +1,20 @@
+from node import Node
 from node import *
 
 class Tree:
 
-    def __init__(self, root: Node):
+    def __init__(self, root: Node = None):
         self.root = root
 
     def find(self, key) -> Node:
-        return self.__find(self, key, self.root)
+        return self.__find(key, self.root)
         
     def __find(self, key, root: Node) -> Node:
         if root is None or key is None:
             return None
         if key == root.key:
             return root
+        print(root)
         
         left = self.__find(key, root.left)
         if left is not None:
@@ -27,7 +29,7 @@ class Tree:
         if self.root is None:
             self.root = node
             return
-        self.__insert(self, node, self.root)
+        self.__insert(node, self.root)
 
     def __insert(self, node: Node, root: Node):
         if node < root:
@@ -41,20 +43,20 @@ class Tree:
             else:
                 self.__insert(node, root.right)
 
-    def delete(self, key):
+    def delete(self, key) -> bool:
         if self.root is None:
-            return
+            return False
         
         if key == self.root.key:
             if self.root.right is not None:
                 self.root = self.root.right
             else:
                 self.root.left = self.root.left
-            return
+            return True
         
         to_delete: Node = self.find(key)
         if to_delete is None or not isinstance(to_delete.parent, Node):
-            return
+            return False
         
         replacement = to_delete.right if to_delete.right is not None else to_delete.left
         if to_delete.parent.right is not None and to_delete.key == to_delete.parent.right.key:
@@ -63,3 +65,4 @@ class Tree:
             to_delete.parent.left = replacement
         else:
             raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
+        return True
