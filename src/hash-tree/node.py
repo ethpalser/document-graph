@@ -11,7 +11,7 @@ class Node:
         output = f"[key: {self.key}, data: {self.data}, "
         output += f"left: {f"[key: {self.left.key}]" if self.left is not None else None}, "
         output += f"right: {f"[key: {self.right.key}]" if self.right is not None else None}, "
-        output += f"parent: {self.parent}]"
+        output += f"parent: {f"[key: {self.parent.key}]" if self.parent is not None else None}]"
         return output
 
     def __lt__(self, other: any) -> bool:

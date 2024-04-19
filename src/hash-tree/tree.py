@@ -14,7 +14,6 @@ class Tree:
             return None
         if key == root.key:
             return root
-        print(root)
         
         left = self.__find(key, root.left)
         if left is not None:
@@ -34,35 +33,60 @@ class Tree:
     def __insert(self, node: Node, root: Node):
         if node < root:
             if root.left is None:
+                node.parent = root
                 root.left = node
             else:
                 self.__insert(node, root.left)
         else:
             if root.right is None:
+                node.parent = root
                 root.right = node
             else:
                 self.__insert(node, root.right)
 
     def delete(self, key) -> bool:
-        if self.root is None:
-            return False
-        
-        if key == self.root.key:
-            if self.root.right is not None:
-                self.root = self.root.right
-            else:
-                self.root.left = self.root.left
-            return True
-        
         to_delete: Node = self.find(key)
-        if to_delete is None or not isinstance(to_delete.parent, Node):
+        if to_delete is None:
             return False
         
-        replacement = to_delete.right if to_delete.right is not None else to_delete.left
-        if to_delete.parent.right is not None and to_delete.key == to_delete.parent.right.key:
-            to_delete.parent.right = replacement
-        elif to_delete.parent.left is not None and to_delete.key == to_delete.parent.left.key:
-            to_delete.parent.left = replacement
+        to_replace: Node
+        # This is a leaf node
+        if to_delete.left is None and to_delete.right is None:
+            to_replace = None
+        # Only a left child
+        elif to_delete.left is not None and to_delete.right is None:
+            to_replace = to_delete.left
+        # Only a right child
+        elif to_delete.right is not None and to_delete.left is None:
+            to_replace = to_delete.right
+        # Has both children
         else:
-            raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
+            # Fetch the next largest node to replace the one being deleted
+            right_min: Node = to_delete.right
+            while right_min.left is not None:
+                right_min = right_min.left
+            # Move the replacing node's child to its location
+            if right_min.right is not None:
+                right_min.parent.left = right_min.right
+            right_min.left = to_delete.left
+            
+            # Determine if this is a child of the node being deleted
+            if to_delete.right != right_min:
+                right_min.right = to_delete.right
+            to_replace = right_min
+
+        if to_delete.parent is None:
+            self.root = to_replace
+        else:
+            # Determine which child of the parent this is
+            match to_delete:
+                case to_delete.parent.left:
+                    to_delete.parent.left = to_replace
+                case to_delete.parent.right:
+                    to_delete.parent.right = to_replace
+                case _:
+                    raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
+        # Removing references for clean up
+        to_delete.left = None
+        to_delete.right = None
         return True
