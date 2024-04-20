@@ -1,72 +1,73 @@
 from node import Node
-from node import *
 
 class Tree:
 
-    def __init__(self, root: Node = None):
-        self.root = root
+    def __init__(self):
+        self.nil = Node(None, None)
+        self.root = self.nil
 
     def find(self, key) -> Node:
-        return self.__find(key, self.root)
-        
-    def __find(self, key, root: Node) -> Node:
-        if root is None or key is None:
-            return None
-        if key == root.key:
-            return root
-        
-        left = self.__find(key, root.left)
-        if left is not None:
-            return left
-        
-        right = self.__find(key, root.right)
-        if right is not None:
-            return right
-        return None
+        curr = self.root
+        while curr != self.nil and key != curr.key:
+            if key < curr.key:
+                curr = curr.left
+            else: # > curr.key
+                curr = curr.right
+        return curr
     
-    def insert(self, node: Node):
-        if self.root is None:
-            self.root = node
-            return
-        self.__insert(node, self.root)
+    def insert(self, key, data):
+        if key is None:
+            raise Exception("key cannot be none")
+        new_node = Node(key, data)
+        new_node.parent = None
+        new_node.left = self.nil
+        new_node.right = self.nil
 
-    def __insert(self, node: Node, root: Node):
-        if node < root:
-            if root.left is None:
-                node.parent = root
-                root.left = node
+        parent = None
+        curr = self.root
+        while curr != self.nil:
+            parent = curr
+            if key < curr.key:
+                curr = curr.left
+            elif key > curr.key:
+                curr = curr.right
             else:
-                self.__insert(node, root.left)
+                # duplicate key, ignore insert
+                return
+        
+
+        if parent is None:
+            self.root = new_node
         else:
-            if root.right is None:
-                node.parent = root
-                root.right = node
-            else:
-                self.__insert(node, root.right)
+            new_node.parent = parent
+            if key < parent.key:
+                parent.left = new_node
+            else: # > parent.key
+                parent.right = new_node
 
     def delete(self, key) -> bool:
         to_delete: Node = self.find(key)
-        if to_delete is None:
+        if to_delete == self.nil:
             return False
         
         to_replace: Node
         # This is a leaf node
-        if to_delete.left is None and to_delete.right is None:
-            to_replace = None
+        if to_delete.left == self.nil and to_delete.right == self.nil:
+            to_replace = self.nil
         # Only a left child
-        elif to_delete.left is not None and to_delete.right is None:
+        elif to_delete.left != self.nil and to_delete.right == self.nil:
             to_replace = to_delete.left
         # Only a right child
-        elif to_delete.right is not None and to_delete.left is None:
+        elif to_delete.right != self.nil and to_delete.left == self.nil:
             to_replace = to_delete.right
         # Has both children
         else:
             # Fetch the next largest node to replace the one being deleted
             right_min: Node = to_delete.right
-            while right_min.left is not None:
+            while right_min.left != self.nil:
                 right_min = right_min.left
             # Move the replacing node's child to its location
-            if right_min.right is not None:
+            if right_min.right != self.nil:
                 right_min.parent.left = right_min.right
             right_min.left = to_delete.left
             
