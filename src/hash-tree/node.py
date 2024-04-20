@@ -50,10 +50,9 @@ class AVLNode(Node):
         self.set_height()
 
     def balance(self) -> int:
-        left = 0 if self.left is None else 1 + self.left.balance
-        right = 1 if self.right is None else 1 + self.right.balance
-        self.balance = left - right
-        return self.balance
+        left = 0 if self.left is None else self.left.height
+        right = 0 if self.right is None else self.right.height
+        return left - right
 
 class RBNode(Node):
 
