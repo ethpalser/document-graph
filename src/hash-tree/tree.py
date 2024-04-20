@@ -89,4 +89,5 @@ class Tree:
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
+        del to_delete
         return True

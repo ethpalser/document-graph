@@ -19,15 +19,41 @@ class Node:
             return False
         # These keys should use types that can be compared using <
         return self.key < other.key
+    
+    def __eq__(self, other: any) -> bool:
+        if not isinstance(other, Node):
+            return False
+        return self.key == other.key
 
 class AVLNode(Node):
 
     def __init__(self, data = None, left = None, right = None, parent = None):
         super().__init__(data, left, right, parent)
-        self.balance = 0
+        self.height = 0
 
     def __repr__(self) -> str:
-        return super().__repr__()
+        output = super().__repr__()[:-1]
+        output += f", height: {self.height}]"
+        return output
+    
+    def set_height(self):
+        left = 0 if self.left is None else self.left.height
+        right = 0 if self.right is None else self.right.height
+        return 1 + max(left, right)
+    
+    def set_left(self, left):
+        self.left = left
+        self.set_height()
+
+    def set_right(self, right):
+        self.right = right
+        self.set_height()
+
+    def balance(self) -> int:
+        left = 0 if self.left is None else 1 + self.left.balance
+        right = 1 if self.right is None else 1 + self.right.balance
+        self.balance = left - right
+        return self.balance
 
 class RBNode(Node):
 
