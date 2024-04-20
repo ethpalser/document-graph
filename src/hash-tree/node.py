@@ -29,7 +29,7 @@ class AVLNode(Node):
 
     def __init__(self, data = None, left = None, right = None, parent = None):
         super().__init__(data, left, right, parent)
-        self.height = 0
+        self.height = 1
 
     def __repr__(self) -> str:
         output = super().__repr__()[:-1]
