@@ -61,4 +61,6 @@ class RBNode(Node):
         self.black = True
 
     def __repr__(self) -> str:
-        return super().__repr__()
+        output = super().__repr__()[:-1]
+        output += f", black: {self.black}]"
+        return output
