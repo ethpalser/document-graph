@@ -36,19 +36,14 @@ class AVLNode(Node):
         output += f", height: {self.height}]"
         return output
     
-    def set_height(self):
+    def update_height(self):
+        if self.key is None:
+            self.height = 0
+            return
         left = 0 if self.left is None else self.left.height
         right = 0 if self.right is None else self.right.height
-        return 1 + max(left, right)
+        self.height = 1 + max(left, right)
     
-    def set_left(self, left):
-        self.left = left
-        self.set_height()
-
-    def set_right(self, right):
-        self.right = right
-        self.set_height()
-
     def balance(self) -> int:
         left = 0 if self.left is None else self.left.height
         right = 0 if self.right is None else self.right.height

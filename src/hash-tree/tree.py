@@ -1,4 +1,4 @@
-from node import Node
+from node import Node, AVLNode
 
 class Tree:
 
@@ -35,7 +35,6 @@ class Tree:
                 # duplicate key, ignore insert
                 return
         
-
         if parent is None:
             self.root = new_node
         else:
@@ -92,3 +91,85 @@ class Tree:
         to_delete.right = None
         del to_delete
         return True
+
+class AVLTree(Tree):
+
+    def __rotate_left(self, node: Node):
+        if node is None or Node == self.nil:
+            return
+        temp = node.right.left
+        node.right.left = node
+        node.right.parent = node.parent
+        node.parent = node.right
+        node.right = temp
+        node.update_height()
+        node.parent.update_height()
+
+    def __rotate_right(self, node: Node):
+        if node is None or Node == self.nil:
+            return
+        temp = node.left.right
+        node.left.right = node
+        node.left.parent = node.parent
+        node.parent = node.left
+        node.left = temp
+        node.parent.update_height()
+        node.update_height()
+
+    def __balance_tree(self, node: AVLNode):
+        if node is None:
+            return
+        parent = node.parent
+        while parent is not None:
+            if __left_child(node):
+                # parent is left heavy
+                if parent.balance() > 0:
+                    if node.balance() < 0:
+                        self.__rotate_left(node)
+                        self.__rotate_right(parent) # Node's new parent after rotation
+                    else:
+                        self.__rotate_left(node)
+                else:
+                    if parent.balance() < 0:
+                        # height change is absorbed
+                        break
+                    parent.update_height()
+            else:
+                # parent is right heavy
+                if parent.balance() < 0:
+                    if node.balance() > 0:
+                        self.__rotate_right(node)
+                        self.__rotate_left(parent)
+                    else:
+                        self.__rotate_right(node)
+                else:
+                    if parent.balance() > 0:
+                        # height change is absorbed
+                        break
+                    parent.update_height()
+            parent = parent.parent
+
+    def insert(self, key, data):
+        return super().insert(key, data)
+    
+    def delete(self, key) -> bool:
+        return super().delete(key)
+    
+class RBTree(Tree):
+    
+    def insert(self, key, data):
+        return super().insert(key, data)
+    
+    def delete(self, key) -> bool:
+        return super().delete(key)
+
+def __left_child(node: Node) -> bool:
+    if node.parent is None:
+        raise Exception("This node does not have a parent.")
+    match node:
+        case node.parent.left:
+            return True
+        case node.parent.right:
+            return False
+        case _:
+            raise Exception("Node has a parent, but is not one of its children.")
