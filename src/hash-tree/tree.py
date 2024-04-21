@@ -6,6 +6,20 @@ class Tree:
         self.nil = Node(None, None)
         self.root = self.nil
 
+    def __repr__(self) -> str:
+        return self.__print_tree(0, self.root)
+
+    def __print_tree(self, height, node):
+        if node is None or node == self.nil:
+            return ""
+        branch = self.__print_tree(height + 1, node.right)
+        branch += "\n"
+        for i in range(0, height):
+            branch += "      "
+        branch += f"{node.key} <"
+        branch += self.__print_tree(height + 1, node.left)
+        return branch
+
     def find(self, key) -> Node:
         curr = self.root
         while curr != self.nil and key != curr.key:
