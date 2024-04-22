@@ -16,7 +16,7 @@ class Tree:
         branch += "\n"
         for i in range(0, height):
             branch += "      "
-        branch += f"k:{node.key}"
+        branch += f"k:{node.key},b:{node.balance()}"
         if node.left != self.nil or node.right != self.nil:
             branch += " <"
         branch += self.__print_tree(height + 1, node.left)
@@ -187,8 +187,8 @@ class AVLTree(Tree):
                         self._rotate_right(parent)
                     else:
                         self._rotate_right(parent)
-                else:
-                    # equality and right imbalance are stable
+                elif parent.balance() < 0:
+                    # imbalance will be absorbed by node
                     break
             else:
                 # right imbalance
@@ -199,10 +199,10 @@ class AVLTree(Tree):
                         self._rotate_left(parent)
                     elif node.balance() < 0:
                         self._rotate_left(parent)
-                else:
-                    if parent.balance() > 0:
-                        # equality and right imbalance are stable
-                        break
+                elif parent.balance() > 0:
+                    # imbalance will be absorbed by node
+                    break
+            parent.update_height()
             node = parent
     
     def insert(self, key, data):
