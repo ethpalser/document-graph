@@ -140,38 +140,48 @@ class AVLTree(Tree):
             return
         temp = node.right.left
         node.right.left = node
-        node.right.parent = node.parent
-        if node.parent is not None and node.parent != self.nil:
+        parent = node.parent
+        node.right.parent = parent
+        if parent is not None and parent != self.nil:
             if self._left_child(node):
-                node.parent.left = node.right
+                parent.left = node.right
             else:
-                node.parent.right = node.right
+                parent.right = node.right
         else:
             self.root = node.right
 
         node.parent = node.right
         node.right = temp
+        # Adjust heights, necessary for following balances
         node.update_height()
         node.parent.update_height()
+        if parent is not None:
+            parent.update_height()
+        else:
+            self.root.update_height()
 
     def _rotate_right(self, node: AVLNode):
         if node is None or node == self.nil or node.left == self.nil:
             return
         temp = node.left.right
         node.left.right = node
-        node.left.parent = node.parent
-        if node.parent is not None:
+        parent = node.parent
+        node.left.parent = parent
+        if parent is not None:
             if self._left_child(node):
-                node.parent.left = node.left
+                parent.left = node.left
             else:
-                node.parent.right = node.left
+                parent.right = node.left
         else:
             self.root = node.left
 
         node.parent = node.left
         node.left = temp
-        node.update_height()
-        node.parent.update_height()
+        # Adjust heights, necessary for following balances
+        if parent is not None:
+            parent.update_height()
+        else:
+            self.root.update_height()
 
     def _balance_tree(self, node: AVLNode):
         if node is None:
@@ -202,7 +212,6 @@ class AVLTree(Tree):
                 elif parent.balance() > 0:
                     # imbalance will be absorbed by node
                     break
-            parent.update_height()
             node = parent
     
     def insert(self, key, data):
