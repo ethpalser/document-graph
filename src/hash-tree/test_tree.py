@@ -173,7 +173,7 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(6), tree.root.right)
         self.assertEqual(tree.find(5), tree.root.right.left) # Affected by rotation
     
-    def test_balance_tree_with_left_rotation(self):
+    def test_insert_with_left_rotation(self):
         tree = AVLTree()
         tree.insert(1, None)
         tree.insert(2, None)
@@ -184,7 +184,7 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(1), tree.root.left)
         self.assertEqual(tree.find(3), tree.root.right)
 
-    def test_balance_tree_with_right_rotation(self):
+    def test_insert_with_right_rotation(self):
         tree = AVLTree()
         tree.insert(3, None)
         tree.insert(2, None)
@@ -195,7 +195,7 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(1), tree.root.left)
         self.assertEqual(tree.find(3), tree.root.right)
     
-    def test_balance_tree_with_left_right_rotation(self):
+    def test_insert_with_left_right_rotation(self):
         tree = AVLTree()
         tree.insert(9, None)
         tree.insert(5, None)
@@ -206,7 +206,7 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(5), tree.root.left)
         self.assertEqual(tree.find(9), tree.root.right)
         
-    def test_balance_tree_with_right_left_rotation(self):
+    def test_insert_with_right_left_rotation(self):
         tree = AVLTree()
         tree.insert(5, None)
         tree.insert(9, None)
@@ -217,7 +217,7 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(5), tree.root.left)
         self.assertEqual(tree.find(9), tree.root.right)
     
-    def test_balance_tree_with_many_imbalances(self):
+    def test_insert_with_many_imbalances(self):
         tree = AVLTree()
         tree.insert(1, None) # root
         tree.insert(2, None) # balanced
@@ -231,7 +231,7 @@ class TestAVLTree(unittest.TestCase):
         tree.insert(10, None) # rotate left 6
         self.assertEqual(tree.find(4), tree.root)
 
-    def test_balance_tree_deletion_with_no_rotation(self):
+    def test_delete_with_no_rotation(self):
         tree = AVLTree()
         tree.insert(1, None)
         tree.insert(2, None)
@@ -242,7 +242,19 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(2), tree.nil)
         self.assertEqual(tree.find(3), tree.root)
         self.assertEqual(tree.root.right, tree.nil)
-        
+
+    def test_delete_with_no_rotation_using_next_largest(self):
+        tree = AVLTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(4, None)
+        tree.insert(3, None)
+        self.assertEqual(tree.find(2), tree.root)
+        result = tree.delete(2)
+        self.assertTrue(result)
+        self.assertEqual(tree.find(2), tree.nil)
+        # This should be detached from 4's left and used as root
+        self.assertEqual(tree.find(3), tree.root)
 
 if __name__ == '__main__':
     unittest.main()

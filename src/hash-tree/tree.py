@@ -82,8 +82,7 @@ class Tree:
             while right_min.left != self.nil:
                 right_min = right_min.left
             # Move the replacing node's child to its location
-            if right_min.right != self.nil:
-                right_min.parent.left = right_min.right
+            right_min.parent.left = right_min.right
             right_min.left = to_delete.left
             
             # Determine if this is a child of the node being deleted
@@ -102,6 +101,12 @@ class Tree:
                     to_delete.parent.right = to_replace
                 case _:
                     raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
+        # Update parent references
+        to_replace.parent = to_delete.parent
+        if to_delete.left is not None and to_delete.left != self.nil:
+            to_delete.left.parent = to_replace
+        if to_delete.right is not None and to_delete.right != self.nil:
+            to_delete.right.parent = to_replace
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
@@ -270,8 +275,7 @@ class AVLTree(Tree):
             while right_min.left != self.nil:
                 right_min = right_min.left
             # Move the replacing node's child to its location
-            if right_min.right != self.nil:
-                right_min.parent.left = right_min.right
+            right_min.parent.left = right_min.right
             right_min.left = to_delete.left
             
             # Determine if this is a child of the node being deleted
@@ -290,6 +294,12 @@ class AVLTree(Tree):
                     to_delete.parent.right = to_replace
                 case _:
                     raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
+        # Update parent references
+        to_replace.parent = to_delete.parent
+        if to_delete.left is not None and to_delete.left != self.nil:
+            to_delete.left.parent = to_replace
+        if to_delete.right is not None and to_delete.right != self.nil:
+            to_delete.right.parent = to_replace
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
