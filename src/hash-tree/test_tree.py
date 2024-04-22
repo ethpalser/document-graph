@@ -67,6 +67,7 @@ class TestTree(unittest.TestCase):
 
         result = tree.delete(1.1)
         self.assertTrue(result)
+        self.assertEqual(tree.find(1.1), tree.nil)
         self.assertEqual(tree.nil, tree.root)
 
     def test_delete_given_tree_with_children_and_found_then_true_and_right(self):
@@ -77,8 +78,8 @@ class TestTree(unittest.TestCase):
 
         result = tree.delete(1.1)
         self.assertTrue(result)
-        actual = tree.find(1.2)
-        self.assertEqual(tree.root, actual)
+        self.assertEqual(tree.find(1.1), tree.nil)
+        self.assertEqual(tree.find(1.2), tree.root)
 
     def test_delete_given_tree_with_no_right_child_and_found_then_true_and_left(self):
         tree = Tree()
@@ -87,8 +88,8 @@ class TestTree(unittest.TestCase):
 
         result = tree.delete(1.1)
         self.assertTrue(result)
-        actual = tree.find(1.0)
-        self.assertEqual(tree.root, actual)
+        self.assertEqual(tree.find(1.1), tree.nil)
+        self.assertEqual(tree.find(1.0), tree.root)
 
     def test_delete_given_tree_and_found_child_then_true(self):
         # Given
@@ -104,8 +105,8 @@ class TestTree(unittest.TestCase):
         # When
         result = tree.delete(8)
         self.assertTrue(result)
-        actual = tree.find(9)
-        self.assertEqual(tree.root.right, actual)
+        self.assertEqual(tree.find(9), tree.root.right)
+        self.assertEqual(tree.find(6), tree.root.right.left)
 
 class TestAVLTree(unittest.TestCase):
 
@@ -229,6 +230,19 @@ class TestAVLTree(unittest.TestCase):
         tree.insert(9, None) # rotate left 7
         tree.insert(10, None) # rotate left 6
         self.assertEqual(tree.find(4), tree.root)
+
+    def test_balance_tree_deletion_with_no_rotation(self):
+        tree = AVLTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        self.assertEqual(tree.find(2), tree.root)
+        result = tree.delete(2)
+        self.assertTrue(result)
+        self.assertEqual(tree.find(2), tree.nil)
+        self.assertEqual(tree.find(3), tree.root)
+        self.assertEqual(tree.root.right, tree.nil)
+        
 
 if __name__ == '__main__':
     unittest.main()

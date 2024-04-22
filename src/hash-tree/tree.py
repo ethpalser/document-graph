@@ -293,7 +293,6 @@ class AVLTree(Tree):
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
-        self._balance_tree(to_delete.parent)
         del to_delete
         return True
     
