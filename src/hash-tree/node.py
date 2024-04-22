@@ -32,9 +32,13 @@ class AVLNode(Node):
         self.height = 0 if self.key is None else 1
 
     def __repr__(self) -> str:
-        output = super().__repr__()[:-1]
-        output += f", height: {self.height}]"
+        output = f"[key: {self.key}, data: {self.data}, "
+        output += f"p: {f"[k: {self.parent.key}]" if self.parent is not None else "/"}, "
+        output += f"l: {f"[k: {self.left.key}]" if self.left is not None else "/"}, "
+        output += f"r: {f"[k: {self.right.key}]" if self.right is not None else "/"}, "
+        output += f"h: {self.height}, balance: {self.balance()}]"
         return output
+
     
     def update_height(self):
         if self.key is None:

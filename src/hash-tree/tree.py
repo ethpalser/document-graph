@@ -174,27 +174,26 @@ class AVLTree(Tree):
         node.parent.update_height()
 
     def _balance_tree(self, node: AVLNode):
-        grandparent = None
-        parent = node.parent
-        while parent is not None:
-            grandparent = parent.parent
+        if node is None:
+            return # Nothing can be done
+        while node.parent is not None:
+            parent = node.parent # maintain record, as it will change for node
             if self._left_child(node):
-                # parent is left heavy
-                if parent.balance() > 0:
-                    # child is right heavy, creating a gt-shape imbalance
+                # left imbalance
+                if parent.balance() > 1:
+                    # node with larger right
                     if node.balance() < 0:
                         self._rotate_left(node)
-                        self._rotate_right(parent) # Node's new parent after rotation
-                    elif node.balance() > 0:
+                        self._rotate_right(parent)
+                    else:
                         self._rotate_right(parent)
                 else:
-                    if parent.balance() < 0:
-                        # height change is absorbed
-                        break
+                    # equality and right imbalance are stable
+                    break
             else:
-                # parent is right heavy
-                if parent.balance() < 0:
-                    # child is left heavy, creating a lt-shape imbalance
+                # right imbalance
+                if parent.balance() < -1:
+                    # node with larger left
                     if node.balance() > 0:
                         self._rotate_right(node)
                         self._rotate_left(parent)
@@ -202,10 +201,9 @@ class AVLTree(Tree):
                         self._rotate_left(parent)
                 else:
                     if parent.balance() > 0:
-                        # height change is absorbed
+                        # equality and right imbalance are stable
                         break
             node = parent
-            parent = grandparent
     
     def insert(self, key, data):
         if key is None:

@@ -220,16 +220,15 @@ class TestAVLTree(unittest.TestCase):
         tree = AVLTree()
         tree.insert(1, None) # root
         tree.insert(2, None) # balanced
-        tree.insert(3, None) # rotate left 2
+        tree.insert(3, None) # rotate left 1 (root 2)
         tree.insert(4, None) # balanced
-        tree.insert(5, None) # rotate left 4
-        tree.insert(6, None) # rotate left 5
-        tree.insert(0, None)
-        tree.insert(7, None)
-        tree.insert(8, None)
-        tree.insert(9, None)
-        tree.insert(10, None)
-        self.assertEqual(tree.find(6), tree.root)
+        tree.insert(5, None) # rotate left 3
+        tree.insert(6, None) # rotate left 2 (root 4)
+        tree.insert(7, None) # rotate left 5
+        tree.insert(8, None) # balanced
+        tree.insert(9, None) # rotate left 7
+        tree.insert(10, None) # rotate left 6
+        self.assertEqual(tree.find(4), tree.root)
 
 if __name__ == '__main__':
     unittest.main()
