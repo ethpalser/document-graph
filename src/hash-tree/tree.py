@@ -31,7 +31,7 @@ class Tree:
                 curr = curr.right
         return curr
     
-    def insert(self, key, data):
+    def insert(self, key, data) -> Node:
         if key is None:
             raise Exception("key cannot be none")
         new_node = Node(key, data)
@@ -59,6 +59,7 @@ class Tree:
                 parent.left = new_node
             else: # > parent.key
                 parent.right = new_node
+        return new_node
 
     def delete(self, key) -> bool:
         to_delete: Node = self.find(key)
@@ -81,13 +82,12 @@ class Tree:
             right_min: Node = to_delete.right
             while right_min.left != self.nil:
                 right_min = right_min.left
-            # Move the replacing node's child to its location
-            right_min.parent.left = right_min.right
-            right_min.left = to_delete.left
-            
-            # Determine if this is a child of the node being deleted
+
             if to_delete.right != right_min:
+                # Move the replacing node's only potential child to take its place
+                right_min.parent.left = right_min.right
                 right_min.right = to_delete.right
+            right_min.left = to_delete.left
             to_replace = right_min
 
         if to_delete.parent is None:
@@ -103,31 +103,18 @@ class Tree:
                     raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
         # Update parent references
         to_replace.parent = to_delete.parent
-        if to_delete.left is not None and to_delete.left != self.nil:
+        if to_delete.left is not None and to_delete.left != self.nil and to_delete.left != to_replace:
             to_delete.left.parent = to_replace
-        if to_delete.right is not None and to_delete.right != self.nil:
+        if to_delete.right is not None and to_delete.right != self.nil and to_delete.right != to_replace:
             to_delete.right.parent = to_replace
+        self._balance_tree(to_replace)
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
         del to_delete
         return True
 
-class AVLTree(Tree):
-
-    def __init__(self):
-        self.nil = AVLNode(None, None)
-        self.root = self.nil
-
-    def find(self, key) -> AVLNode:
-        curr = self.root
-        while curr != self.nil and key != curr.key:
-            if key < curr.key:
-                curr = curr.left
-            else: # > curr.key
-                curr = curr.right
-        return curr
-        
+    # General Node-manipulating methods
 
     def _left_child(self, node: Node) -> bool:
         if node.parent is None:
@@ -138,9 +125,9 @@ class AVLTree(Tree):
             case node.parent.right:
                 return False
             case _:
-                raise Exception(f"Node is not a child of its parent.")
+                raise Exception(f"Node is not a child of its parent. {node}")
 
-    def _rotate_left(self, node: AVLNode):
+    def _rotate_left(self, node: Node):
         if node is None or node == self.nil or node.right == self.nil:
             return
         temp = node.right.left
@@ -157,15 +144,8 @@ class AVLTree(Tree):
 
         node.parent = node.right
         node.right = temp
-        # Adjust heights, necessary for following balances
-        node.update_height()
-        node.parent.update_height()
-        if parent is not None:
-            parent.update_height()
-        else:
-            self.root.update_height()
 
-    def _rotate_right(self, node: AVLNode):
+    def _rotate_right(self, node: Node):
         if node is None or node == self.nil or node.left == self.nil:
             return
         temp = node.left.right
@@ -182,11 +162,30 @@ class AVLTree(Tree):
 
         node.parent = node.left
         node.left = temp
-        # Adjust heights, necessary for following balances
-        if parent is not None:
-            parent.update_height()
-        else:
-            self.root.update_height()
+
+class AVLTree(Tree):
+
+    def __init__(self):
+        self.nil = AVLNode(None, None)
+        self.root = self.nil
+
+    def _update_heights(self, node: AVLNode):
+        if node is None:
+            raise Exception("Invalid height update. Cannot update height of None")
+        # Adjust heights, necessary for balancing
+        node.update_height()
+        if node.parent is not None:
+            node.parent.update_height()
+            if node.parent.parent is not None:
+                node.parent.parent.update_height()
+
+    def _rotate_left(self, node: Node):
+        super()._rotate_left(node)
+        self._update_heights(node)
+
+    def _rotate_right(self, node: Node):
+        super()._rotate_right(node)
+        self._update_heights(node)
 
     def _balance_tree(self, node: AVLNode):
         if node is None:
@@ -274,13 +273,12 @@ class AVLTree(Tree):
             right_min: Node = to_delete.right
             while right_min.left != self.nil:
                 right_min = right_min.left
-            # Move the replacing node's child to its location
-            right_min.parent.left = right_min.right
-            right_min.left = to_delete.left
-            
-            # Determine if this is a child of the node being deleted
+
             if to_delete.right != right_min:
+                # Move the replacing node's only potential child to take its place
+                right_min.parent.left = right_min.right
                 right_min.right = to_delete.right
+            right_min.left = to_delete.left
             to_replace = right_min
 
         if to_delete.parent is None:
@@ -296,10 +294,11 @@ class AVLTree(Tree):
                     raise Exception("Something went wrong: Node has a parent, but is not one of its children.")
         # Update parent references
         to_replace.parent = to_delete.parent
-        if to_delete.left is not None and to_delete.left != self.nil:
+        if to_delete.left is not None and to_delete.left != self.nil and to_delete.left != to_replace:
             to_delete.left.parent = to_replace
-        if to_delete.right is not None and to_delete.right != self.nil:
+        if to_delete.right is not None and to_delete.right != self.nil and to_delete.right != to_replace:
             to_delete.right.parent = to_replace
+        self._balance_tree(to_replace)
         # Removing references for clean up
         to_delete.left = None
         to_delete.right = None
