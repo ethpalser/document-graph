@@ -174,16 +174,6 @@ class AVLTree(Tree):
         self.nil = AVLNode(None, None)
         self.root = self.nil
 
-    def _update_heights(self, node: AVLNode):
-        if node is None:
-            raise Exception("Invalid height update. Cannot update height of None")
-        # Adjust heights, necessary for balancing
-        node.update_height()
-        if node.parent is not None:
-            node.parent.update_height()
-            if node.parent.parent is not None:
-                node.parent.parent.update_height()
-
     def _balance_tree(self, node: AVLNode):
         if node is None:
             return
