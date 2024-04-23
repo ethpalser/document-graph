@@ -184,22 +184,13 @@ class AVLTree(Tree):
             if node.parent.parent is not None:
                 node.parent.parent.update_height()
 
-    def _rotate_left(self, node: Node):
-        super()._rotate_left(node)
-        self._update_heights(node)
-
-    def _rotate_right(self, node: Node):
-        super()._rotate_right(node)
-        self._update_heights(node)
-
     def _balance_tree(self, node: AVLNode):
         if node is None:
             return
-        # Ensure that this node has the correct height for balancing
-        node.update_height()
         while node.parent is not None:
+            # Ensure that this node has the correct height for balancing
+            node.update_height()
             parent = node.parent # Maintain record, as it will change for node
-            parent.update_height() # This height may have changed from its child's height changing
             if self._left_child(node):
                 # left imbalance
                 if parent.balance() > 1:
