@@ -16,7 +16,7 @@ class Tree:
         branch += "\n"
         for i in range(0, height):
             branch += "      "
-        branch += f"k:{node.key}"
+        branch += f"k:{node.key}, black:{node.black}"
         if node.left != self.nil or node.right != self.nil:
             branch += " <"
         branch += self.__print_tree(height + 1, node.left)
@@ -227,9 +227,76 @@ class AVLTree(Tree):
         return True
     
 class RBTree(Tree):
+
+    def __init__(self):
+        self.nil = RBNode(None)
+        self.root = self.nil
     
+    def _balance_tree(self, node: RBNode):
+        if node is None:
+            return
+        
+        while node.parent is not None:
+            parent = node.parent
+            if parent.parent is None:
+                # Recolour to avoid red-violation
+                if not parent.black:
+                    parent.black = True
+                break
+
+            child_is_left = self._left_child(node)
+            parent_is_left = self._left_child(parent)
+
+            grandparent = parent.parent
+            uncle = grandparent.right if parent_is_left else grandparent.left
+
+            if not parent.black and not uncle.black:
+                # Rebalancing is not needed, can recolour to avoid red-violation
+                parent.black = True
+                uncle.black = True
+                grandparent.black = False
+            elif not parent.black and uncle.black:
+                if parent_is_left:
+                    if not child_is_left:
+                        self._rotate_left(parent)
+                        # Set the current node to the demoted parent
+                        node = parent
+                        continue
+                    else:
+                        self._rotate_right(grandparent)
+                        # Recolour to avoid red-violation with node and parent
+                        parent.black = True
+                        # Recolour to avoid black-violation
+                        grandparent.black = False
+                else:
+                    if child_is_left:
+                        self._rotate_right(parent)
+                        # Set the current node to the demoted parent
+                        node = parent
+                        continue
+                    else:
+                        self._rotate_left(grandparent)
+                        # Recolour to avoid red-violation with node and parent
+                        parent.black = True
+                        # Recolour to avoid black-violation
+                        grandparent.black = False
+            node = grandparent
+        # Update the root to reflect rearranged structure
+        if node.parent is None:
+            self.root = node
+            self.root.black = True
+
     def insert(self, key, data):
-        return super().insert(key, data)
+        if key is None:
+            raise Exception("key cannot be none")
+        new_node = RBNode(key, data)
+        new_node.parent = None
+        new_node.left = self.nil
+        new_node.right = self.nil
+        new_node.black = False
+
+        super()._insert_node(new_node)
+        self._balance_tree(new_node)
     
     def delete(self, key) -> bool:
         return super().delete(key)

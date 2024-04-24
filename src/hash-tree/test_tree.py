@@ -1,6 +1,6 @@
 import unittest
 
-from tree import Tree, AVLTree
+from tree import Tree, AVLTree, RBTree
 
 class TestTree(unittest.TestCase):
 
@@ -255,6 +255,82 @@ class TestAVLTree(unittest.TestCase):
         self.assertEqual(tree.find(2), tree.nil)
         # This should be detached from 4's left and used as root
         self.assertEqual(tree.find(3), tree.root)
+
+class TestRBTree(unittest.TestCase):
+     
+    def test_insert_with_left_rotation(self):
+        tree = RBTree()
+        tree.insert(1, None) # Red
+        tree.insert(2, None) # Red, Parent -> Black
+        tree.insert(3, None) # Red, Parent -> Rotate Left, Black, Grandparent (1) -> Red
+        expected_root = tree.find(2)
+        self.assertEqual(expected_root, tree.root)
+        self.assertTrue(expected_root.black)
+        expected_left = tree.find(1)
+        self.assertEqual(expected_left, tree.root.left)
+        self.assertFalse(expected_left.black)
+        expected_right = tree.find(3)
+        self.assertEqual(expected_right, tree.root.right)
+        self.assertFalse(expected_right.black)
+
+    def test_insert_with_right_rotation(self):
+        tree = RBTree()
+        tree.insert(3, None) # Red
+        tree.insert(2, None) # Red, Parent -> Black
+        tree.insert(1, None) # Red, Parent -> Rotate Right, Black, Grandparent (3) -> Red
+        expected_root = tree.find(2)
+        self.assertEqual(expected_root, tree.root)
+        self.assertTrue(expected_root.black)
+        expected_left = tree.find(1)
+        self.assertEqual(expected_left, tree.root.left)
+        self.assertFalse(expected_left.black)
+        expected_right = tree.find(3)
+        self.assertEqual(expected_right, tree.root.right)
+        self.assertFalse(expected_right.black)
+    
+    def test_insert_with_left_right_rotation(self):
+        tree = RBTree()
+        tree.insert(9, None) # Red
+        tree.insert(5, None) # Red, Parent -> Black
+        tree.insert(7, None) # Red, Parent -> Rotate Right, Grandparent -> Rotate Left, then P -> Black, G -> Red
+        expected_root = tree.find(7)
+        self.assertEqual(expected_root, tree.root)
+        self.assertTrue(expected_root.black)
+        expected_left = tree.find(5)
+        self.assertEqual(expected_left, tree.root.left)
+        self.assertFalse(expected_left.black)
+        expected_right = tree.find(9)
+        self.assertEqual(expected_right, tree.root.right)
+        self.assertFalse(expected_right.black)
+        
+    def test_insert_with_right_left_rotation(self):
+        tree = RBTree()
+        tree.insert(5, None) # Red
+        tree.insert(9, None) # Red, Parent -> Black
+        tree.insert(7, None) # Red, Parent -> Rotate Left, Grandparent -> Rotate Right, then P -> Black, G -> Red
+        expected_root = tree.find(7)
+        self.assertEqual(expected_root, tree.root)
+        self.assertTrue(expected_root.black)
+        expected_left = tree.find(5)
+        self.assertEqual(expected_left, tree.root.left)
+        self.assertFalse(expected_left.black)
+        expected_right = tree.find(9)
+        self.assertEqual(expected_right, tree.root.right)
+        self.assertFalse(expected_right.black)
+    
+    def test_insert_with_many_imbalances(self):
+        tree = RBTree()
+        tree.insert(1, None) # root
+        tree.insert(2, None) # balanced, recolour root -> Black
+        tree.insert(3, None) # rotate left 1 (root 2), recolour 1 -> Red, 2 -> Black
+        tree.insert(4, None) # balanced, recolour 1 and 3 -> Black
+        tree.insert(5, None) # rotate left 3, recolour 3 -> Red, 4 -> Black
+        tree.insert(6, None) # balanced, recolour 3 and 5 -> Black, 4 -> Red
+        tree.insert(7, None) # rotate left 5, recolour 5 -> Red, 6 -> Black
+        tree.insert(8, None) # balanced, recolour 5 and 7 -> Black, 6 -> Red, then rotate left 2 (root 4) with recolour
+        tree.insert(9, None) # rotate left 7, recolour 7 -> Red, 8 -> Black
+        tree.insert(10, None) # balanced, recolour 7 and 9 -> Black, 8 -> Red
+        self.assertEqual(tree.find(4), tree.root)
 
 if __name__ == '__main__':
     unittest.main()
