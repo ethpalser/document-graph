@@ -114,10 +114,6 @@ class Tree:
             to_delete.left.parent = to_replace
         if to_delete.right is not None and to_delete.right != self.nil and to_delete.right != to_replace:
             to_delete.right.parent = to_replace
-        # Removing references for clean up
-        to_delete.left = None
-        to_delete.right = None
-        del to_delete
         # Return the replacing node for processing
         return to_replace
 
@@ -298,13 +294,75 @@ class RBTree(Tree):
         super()._insert_node(new_node)
         self._balance_tree(new_node)
     
-    def _balance_delete(self, node):
-        pass
+    def _balance_delete(self, replacement, deleted):
+        # The replacement is the next successor (black) or an only child (red)
+        if replacement != self.nil and not replacement.black:
+            # This node has replaced its parent, recolour to remove red-violation
+            replacement.black = True
+            return
+        
+        # The replacement is for a leaf node (black or red)
+        if replacement == self.nil:
+            # Deleted red-leaf nodes will not break any properties
+            if not deleted.black:
+                return
+
+        # A black-leaf node was deleted, a rebalance is required
+        node = deleted
+        node_is_left = True if deleted.parent.left == self.nil else False
+        while node.parent is not None:
+            parent = node.parent
+            if parent is None:
+                # The root, nothing is required
+                return
+        
+            sibling = parent.right if node_is_left else parent.left
+            close_nephew = parent.right.left if node_is_left else parent.left.right
+            distant_nephew = parent.right.right if node_is_left else parent.left.left
+            # sibling is red, close, distant and parent are black 
+            if not sibling.black:
+                # Move sibling to the location of the parent
+                if node_is_left:
+                    self._rotate_left(parent)
+                else:
+                    self._rotate_right(parent)
+                sibling.black = True
+                parent.black = False
+                continue
+            # close nephew is red, sibling and distant are black, parent is either
+            if not close_nephew.black:
+                if node_is_left:
+                    self._rotate_right(sibling)
+                else:
+                    self._rotate_left(sibling)
+                close_nephew.black = True
+                sibling.black = False  
+                continue
+            # distant nephew is red, sibling and close are black, parent is either
+            if not distant_nephew.black:
+                if node_is_left:
+                    self._rotate_left(parent)
+                else:
+                    self._rotate_right(parent)
+                sibling.black = parent.black
+                parent.black = True
+                distant_nephew.black = True
+                return
+            
+            if not parent.black and sibling.black and close_nephew.black and distant_nephew.black:
+                parent.black = True
+                sibling.black = False
+                return
+            else:
+                sibling.black = False
+                node = parent
+                if node.parent is not None:
+                    node_is_left = self._left_child(node)
 
     def delete(self, key) -> bool:
         to_delete = self.find(key)
         replacement = super()._delete_node(to_delete)
         if replacement is None:
             return False
-        self._balance_delete(replacement)
+        self._balance_delete(replacement, to_delete)
         return True

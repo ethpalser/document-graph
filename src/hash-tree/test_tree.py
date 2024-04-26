@@ -332,5 +332,113 @@ class TestRBTree(unittest.TestCase):
         tree.insert(10, None) # balanced, recolour 7 and 9 -> Black, 8 -> Red
         self.assertEqual(tree.find(4), tree.root)
 
+    def test_delete_at_red_leaf(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+        # red leaf
+        tree.delete(10)
+        expected_parent = tree.find(9)
+        self.assertTrue(expected_parent.black)
+        # Check no rebalance ocurred
+        expected_root = tree.find(4)
+        self.assertEqual(expected_root, tree.root)
+
+    def test_delete_at_internal_node(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+        # black leaf
+        tree.delete(6)
+        expected_parent = tree.find(4)
+        self.assertTrue(expected_parent.black)
+        expected_sibling = tree.find(2)
+        self.assertFalse(expected_sibling.black)
+        # Check that no rebalance occurred
+        expected_root = tree.find(4)
+        self.assertEqual(expected_root, tree.root)
+
+    def test_delete_at_black_leaf_with_black_parent(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+        # black leaf
+        tree.delete(1)
+        expected_parent = tree.find(2)
+        self.assertTrue(expected_parent.black)
+        expected_sibling = tree.find(3)
+        self.assertFalse(expected_sibling.black)
+        # Check that a rebalance occurred (original root was 4)
+        expected_root = tree.find(6)
+        self.assertEqual(expected_root, tree.root)
+        # Expected change during traversal up
+        self.assertTrue(expected_root.right.black)
+
+    def test_delete_at_black_leaf_with_red_parent(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+        # black leaf
+        tree.delete(7)
+        expected_parent = tree.find(8)
+        self.assertTrue(expected_parent.black)
+        expected_sibling = tree.find(9)
+        self.assertFalse(expected_sibling.black)
+        expected_root = tree.find(4)
+        self.assertEqual(expected_root, tree.root)
+
+    def test_delete_at_black_leaf_with_red_sibling(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+        # black leaf
+        tree.delete(5)
+        expected_parent = tree.find(6)
+        self.assertTrue(expected_parent.black)
+        expected_sibling = tree.find(7)
+        self.assertFalse(expected_sibling.black)
+        expected_root = tree.find(4)
+        self.assertEqual(expected_root, tree.root)
+
 if __name__ == '__main__':
     unittest.main()
