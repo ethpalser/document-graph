@@ -298,5 +298,13 @@ class RBTree(Tree):
         super()._insert_node(new_node)
         self._balance_tree(new_node)
     
+    def _balance_delete(self, node):
+        pass
+
     def delete(self, key) -> bool:
-        return super().delete(key)
+        to_delete = self.find(key)
+        replacement = super()._delete_node(to_delete)
+        if replacement is None:
+            return False
+        self._balance_delete(replacement)
+        return True
