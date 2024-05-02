@@ -1,5 +1,5 @@
 # Document Graph
-A HashTree with keys for nodes comprised of a label and value. Each label defines a subtree representing a document section. Each value defines a strict order of where each item is in relation to another within the section. Nodes within the tree can reference any other node to relate information, or to override traversal. Default traversal will iterate through the tree using in-order traversal.
+A TreeMap with keys for nodes comprised of a label and value. Each label defines a subtree representing a document section. Each value defines a strict order of where each item is in relation to another within the section. Nodes within the tree can reference any other node to relate information, or to override traversal. Default traversal will iterate through the tree using in-order traversal.
 
 ## Purpose
 - Document sections are grouped together, so relationships are local.
