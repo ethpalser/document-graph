@@ -442,8 +442,33 @@ class TestRBTree(unittest.TestCase):
 
 class TestTreeIterator(unittest.TestCase):
 
-    def test_iter_from_root(self):
-        tree = RBTree()
+    def test_iter_with_empty_tree(self):
+        tree = Tree()
+        list = []
+        iterator = tree.iter()
+        count = 0
+        for item in iterator:
+            count += 1
+            if count >= 2:
+                raise Exception("Iterator is not stopping correctly. Possible to run endlessly.")
+            list.append(item.key if item is not None else None)
+        self.assertSequenceEqual(list, [])
+
+    def test_iter_with_tree_of_one(self):
+        tree = Tree()
+        tree.insert(1, None)
+        iterator = tree.iter()
+        list = []
+        count = 0
+        for item in iterator:
+            count += 1
+            if count >= 2:
+                raise Exception("Iterator is not stopping correctly. Possible to run endlessly.")
+            list.append(item.key if item is not None else None)
+        self.assertSequenceEqual(list, [1])
+
+    def test_iter_with_tree_of_many(self):
+        tree = Tree()
         tree.insert(1, None)
         tree.insert(2, None)
         tree.insert(3, None)
@@ -464,7 +489,6 @@ class TestTreeIterator(unittest.TestCase):
                 raise Exception("Iterator is not stopping correctly. Possible to run endlessly.")
             list.append(item.key if item is not None else None)
         self.assertSequenceEqual(list, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -381,16 +381,11 @@ class TreeIterator():
         return self
 
     def __next__(self) -> Node:
-        next = None
-        if self.prev is None:
-            if self.prev_key is not None:
-                return None
-            else:
-                next = self.tree.root
-        else:
-            next = self.prev
-
+        next = self.tree.root if self.prev is None else self.prev
         while True:
+            # The root is nil, or a leaf node was unexpectedly used
+            if next == self.tree.nil:
+                raise StopIteration
             # Follow the left subtree for the next smallest
             while next.left != self.tree.nil:
                 if self.prev_key is not None and next.left.key <= self.prev_key:
@@ -410,7 +405,7 @@ class TreeIterator():
                     next = next.parent
                     if next.key > self.prev_key:
                         break
-            # Iteration ends when the root is reached with no more smaller keys
-            if next == self.tree.root and next.key < self.prev_key:
+            # Iteration ends when the root is reached with no more larger keys (right tree) to visit
+            if next == self.tree.root and next.key <= self.prev_key:
                 raise StopIteration
             # Continue next cycle, looking for the next smallest key
