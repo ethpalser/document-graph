@@ -164,6 +164,9 @@ class Tree:
         node.parent = node.left
         node.left = temp
 
+    def iter(self):
+        return TreeIterator(self)
+
 class AVLTree(Tree):
 
     def __init__(self):
@@ -366,3 +369,37 @@ class RBTree(Tree):
             return False
         self._balance_delete(replacement, to_delete)
         return True
+
+class TreeIterator():
+
+    def __init__(self, tree: Tree):
+        self.nil = tree.nil # Assumes the tree has a nil
+        self.next = tree.root
+        self.prev_key = -1
+    
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> Node:
+        if self.next == self.nil:
+            return self.nil
+        
+        next = self.next
+        while next != self.next:
+            # Next child
+            while next.left != self.nil and next.left > self.prev_key:
+                next = next.left
+            
+            if next != self.next:
+                self.prev_key = self.next.key
+                temp = self.next
+                self.next = next
+                return temp
+            
+            # Follow the right subtree
+            if next.right != self.nil and next.left > self.prev_key:
+                next = next.right
+            # Go to the parent
+            else:
+                while next.key < self.prev_key:
+                    next = next.parent

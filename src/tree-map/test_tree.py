@@ -1,6 +1,6 @@
 import unittest
 
-from tree import Tree, AVLTree, RBTree
+from tree import *
 
 class TestTree(unittest.TestCase):
 
@@ -439,6 +439,28 @@ class TestRBTree(unittest.TestCase):
         self.assertFalse(expected_sibling.black)
         expected_root = tree.find(4)
         self.assertEqual(expected_root, tree.root)
+
+class TestTreeIterator(unittest.TestCase):
+
+    def test_iter_from_root(self):
+        tree = RBTree()
+        tree.insert(1, None)
+        tree.insert(2, None)
+        tree.insert(3, None)
+        tree.insert(4, None)
+        tree.insert(5, None)
+        tree.insert(6, None)
+        tree.insert(7, None)
+        tree.insert(8, None)
+        tree.insert(9, None)
+        tree.insert(10, None)
+
+        list = []
+        iterator = tree.iter()
+        for item in iterator:
+            print(item)
+        self.assertSequenceEqual(list, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
 
 if __name__ == '__main__':
     unittest.main()
