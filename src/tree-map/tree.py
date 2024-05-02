@@ -382,6 +382,7 @@ class TreeIterator():
 
     def __next__(self) -> Node:
         next = self.tree.root if self.prev is None else self.prev
+        # Start iterating through the binary tree without recursion
         while True:
             # The root is nil, or a leaf node was unexpectedly used
             if next == self.tree.nil:

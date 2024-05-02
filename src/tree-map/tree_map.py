@@ -7,7 +7,10 @@ class TreeMap():
         self.tree = RBTree()
 
     def find(self, key):
-        return self.map[key]
+        try:
+            return self.map[key]
+        except KeyError:
+            return None
 
     def insert(self, key, value):
         self.tree.insert(key, value)
@@ -16,3 +19,6 @@ class TreeMap():
     def delete(self, key):
         self.tree.delete(key)
         del self.map[key]
+    
+    def iter(self):
+        return self.tree.iter()
