@@ -8,13 +8,14 @@ class TreeMap():
 
     def find(self, key):
         try:
+            result = self.map[key]
             return self.map[key]
         except KeyError:
             return None
 
     def insert(self, key, value):
         self.tree.insert(key, value)
-        self.map[key] = value
+        self.map.update({key: value})
 
     def delete(self, key):
         if self.find(key) is None:

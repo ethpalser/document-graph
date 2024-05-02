@@ -312,7 +312,7 @@ class RBTree(Tree):
 
         # A black-leaf node was deleted, a rebalance is required
         node = deleted
-        node_is_left = True if deleted.parent.left == self.nil else False
+        node_is_left = True if deleted.parent is not None and deleted.parent.left == self.nil else False
         while node.parent is not None:
             parent = node.parent
             if parent is None:
@@ -383,6 +383,7 @@ class TreeIterator():
     def __next__(self) -> Node:
         next = self.tree.root if self.prev is None else self.prev
         # Start iterating through the binary tree without recursion
+        # Note: Currently not safe from modification
         while True:
             # The root is nil, or a leaf node was unexpectedly used
             if next == self.tree.nil:
