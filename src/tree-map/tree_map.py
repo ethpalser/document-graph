@@ -8,7 +8,6 @@ class TreeMap():
 
     def find(self, key):
         try:
-            result = self.map[key]
             return self.map[key]
         except KeyError:
             return None
