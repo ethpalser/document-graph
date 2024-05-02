@@ -17,6 +17,8 @@ class TreeMap():
         self.map[key] = value
 
     def delete(self, key):
+        if self.find(key) is None:
+            return
         self.tree.delete(key)
         del self.map[key]
     
