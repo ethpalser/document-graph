@@ -373,33 +373,44 @@ class RBTree(Tree):
 class TreeIterator():
 
     def __init__(self, tree: Tree):
-        self.nil = tree.nil # Assumes the tree has a nil
-        self.next = tree.root
-        self.prev_key = -1
+        self.tree = tree
+        self.prev = None
+        self.prev_key = None
     
     def __iter__(self):
         return self
 
     def __next__(self) -> Node:
-        if self.next == self.nil:
-            return self.nil
-        
-        next = self.next
-        while next != self.next:
-            # Next child
-            while next.left != self.nil and next.left > self.prev_key:
-                next = next.left
-            
-            if next != self.next:
-                self.prev_key = self.next.key
-                temp = self.next
-                self.next = next
-                return temp
-            
-            # Follow the right subtree
-            if next.right != self.nil and next.left > self.prev_key:
-                next = next.right
-            # Go to the parent
+        next = None
+        if self.prev is None:
+            if self.prev_key is not None:
+                return None
             else:
-                while next.key < self.prev_key:
+                next = self.tree.root
+        else:
+            next = self.prev
+
+        while True:
+            # Follow the left subtree for the next smallest
+            while next.left != self.tree.nil:
+                if self.prev_key is not None and next.left.key <= self.prev_key:
+                    break
+                next = next.left
+            # Update variables and return the next node
+            if next is not None and next != self.prev:
+                self.prev_key = next.key
+                self.prev = next
+                return next
+            # Go to the right subtree
+            if next.right != self.tree.nil and next.right.key > self.prev_key:
+                next = next.right
+            # Go to the next smallest parent
+            else:
+                while next.parent is not None:
                     next = next.parent
+                    if next.key > self.prev_key:
+                        break
+            # Iteration ends when the root is reached with no more smaller keys
+            if next == self.tree.root and next.key < self.prev_key:
+                raise StopIteration
+            # Continue next cycle, looking for the next smallest key

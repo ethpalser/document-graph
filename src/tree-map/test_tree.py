@@ -457,8 +457,12 @@ class TestTreeIterator(unittest.TestCase):
 
         list = []
         iterator = tree.iter()
+        count = 0
         for item in iterator:
-            print(item)
+            count += 1
+            if count >= 11:
+                raise Exception("Iterator is not stopping correctly. Possible to run endlessly.")
+            list.append(item.key if item is not None else None)
         self.assertSequenceEqual(list, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 
